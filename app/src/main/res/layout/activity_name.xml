@@ -10,5 +10,30 @@
     >
 
 
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="320dp"
+        android:layout_height="80dp"
+        android:hint="הכנס שם"
+        android:textSize="40dp"
+        android:background="@android:color/white"
+        android:layout_marginTop="400dp"
+        android:layout_marginStart="50dp"
+        android:textColor="@android:color/black"
+        android:inputType="textPersonName" />
 
+
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="200dp"
+        android:layout_height="113dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="95dp"
+        android:layout_marginLeft="106dp"
+        android:backgroundTint="@android:color/holo_red_dark"
+        android:text="Start"
+        android:textColor="@android:color/white"
+        android:textSize="40sp" />
 </LinearLayout>
