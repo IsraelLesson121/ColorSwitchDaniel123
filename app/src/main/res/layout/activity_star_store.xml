@@ -2,9 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#2B2B2B">
-
+    android:background="#2B2B2B"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,94 +11,136 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- שורה 1 -->
-        <LinearLayout
+        <!-- כותרת -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="Stars Store"
+            android:textColor="#FFD700"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"/>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_weight="1"
-                android:layout_margin="6dp"
-                android:background="#222222"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⭐ 10"
-                    android:textColor="#FFD700"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_weight="1"
-                android:layout_margin="6dp"
-                android:background="#222222"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⭐ 20"
-                    android:textColor="#FFD700"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- שורה 2 -->
-        <LinearLayout
+        <!-- גריד -->
+        <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:columnCount="2">
 
-            <LinearLayout
+            <!-- כפתור -->
+            <Button
                 android:layout_width="0dp"
                 android:layout_height="120dp"
-                android:layout_weight="1"
+                android:layout_columnWeight="1"
                 android:layout_margin="6dp"
                 android:background="#222222"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true">
+                android:text="◆\n⭐ 10"
+                android:textSize="18sp"
+                android:id="@+id/btn1"
+                android:textColor="#FFD700"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⭐ 30"
-                    android:textColor="#FFD700"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <Button
                 android:layout_width="0dp"
                 android:layout_height="120dp"
-                android:layout_weight="1"
+                android:layout_columnWeight="1"
                 android:layout_margin="6dp"
                 android:background="#222222"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true">
+                android:text="■\n⭐ 20"
+                android:textSize="18sp"
+                android:id="@+id/btn2"
+                android:textColor="#FFD700"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⭐ 40"
-                    android:textColor="#FFD700"
-                    android:textSize="16sp" />
-            </LinearLayout>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="▲\n⭐ 30"
+                android:textSize="18sp"
+                android:id="@+id/btn3"
+                android:textColor="#FFD700"/>
 
-        </LinearLayout>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="●\n⭐ 40"
+                android:textSize="18sp"
+                android:id="@+id/btn4"
+                android:textColor="#FFD700"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="★\n⭐ 50"
+                android:textSize="18sp"
+                android:id="@+id/btn5"
+                android:textColor="#FFD700"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="◇\n⭐ 60"
+                android:textSize="18sp"
+                android:id="@+id/btn6"
+                android:textColor="#FFD700"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="□\n⭐ 70"
+                android:textSize="18sp"
+                android:id="@+id/btn7"
+                android:textColor="#FFD700"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="▼\n⭐ 80"
+                android:id="@+id/btn8"
+                android:textSize="18sp"
+                android:textColor="#FFD700"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="○\n⭐ 90"
+                android:id="@+id/btn9"
+                android:textSize="18sp"
+                android:textColor="#FFD700"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:layout_margin="6dp"
+                android:background="#222222"
+                android:text="☆\n⭐ 100"
+                android:id="@+id/btn10"
+                android:textSize="18sp"
+                android:textColor="#FFD700"/>
+
+        </GridLayout>
 
     </LinearLayout>
-
 </ScrollView>
