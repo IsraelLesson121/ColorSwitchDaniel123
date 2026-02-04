@@ -12,104 +12,168 @@ public class Play extends View {
 
     Paint paint = new Paint();
 
-    // הכדור
-    float ballX;
-    float ballY;
+    // ----- כדור -----
+    float ballX, ballY;
     float ballRadius = 30;
-
-    // פיזיקה
     float velocity = 0;
     float gravity = 1.2f;
-
-    // צבעי הכדור
-    int[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
     int ballColor = Color.RED;
 
-    // המכשול – עיגול מסתובב
-    float obstacleRadius = 250; // גדול יותר
-    float obstacleX;
-    float obstacleY;
-    float angle = 0;
-    float rotationSpeed = 5;
+    int[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
 
-    // דגל לבדיקה שהכדור עבר את המכשול
-    boolean crossedObstacle = false;
+    // ----- מכשולים -----
+    int obstacleCount = 3;              // כמה מכשולים במסך
+    float[] obstaclesY = new float[obstacleCount];
+    float obstacleX;
+    float obstacleRadius = 250;
+    float strokeWidth = 20;
+    float angle = 0;
+
+    // ----- משחק -----
+    boolean gameOver = false;
+    boolean exploding = false;
+
+    // פיצוץ
+    float explosionRadius = 0;
+    int explosionAlpha = 255;
 
     public Play(Context context) {
         super(context);
 
-        ballX = getResources().getDisplayMetrics().widthPixels / 2f;
-        ballY = getResources().getDisplayMetrics().heightPixels / 2f;
+        ballX = getResources().getDisplayMetrics().widthPixels / 2;
+        ballY = getResources().getDisplayMetrics().heightPixels / 2;
 
         obstacleX = ballX;
-        obstacleY = ballY - 400; // מעל הכדור בתחילת המשחק
+
+        // מיקום התחלתי של מכשולים
+        for (int i = 0; i < obstacleCount; i++) {
+            obstaclesY[i] = ballY - 500 - i * 800;
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        // רקע שחור
         canvas.drawColor(Color.BLACK);
 
-        // ציור המכשול – 4 צבעים
-        paint.setStrokeWidth(20);
-        paint.setStyle(Paint.Style.STROKE);
-
-        int[] obsColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
-        for (int i = 0; i < 4; i++) {
-            paint.setColor(obsColors[i]);
-            canvas.drawArc(new RectF(obstacleX - obstacleRadius, obstacleY - obstacleRadius,
-                            obstacleX + obstacleRadius, obstacleY + obstacleRadius),
-                    angle + i * 90, 90, false, paint);
+        // ----- פיזיקה -----
+        if (!gameOver) {
+            velocity += gravity;
+            ballY += velocity;
         }
 
-        angle += rotationSpeed;
-        if (angle >= 360) angle = 0;
+        // ----- המסך עולה -----
+        float middle = canvas.getHeight() / 2f;
+        if (ballY < middle) {
+            float move = middle - ballY;
+            ballY = middle;
 
-        // ציור הכדור
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(ballColor);
-        canvas.drawCircle(ballX, ballY, ballRadius, paint);
-
-        // פיזיקה – קפיצה
-        velocity += gravity;
-        ballY += velocity;
-
-        // גבול תחתון
-        if (ballY > canvas.getHeight() - ballRadius) {
-            ballY = canvas.getHeight() - ballRadius;
-            velocity = 0;
-        }
-
-        // בדיקה אם הכדור עבר את המכשול
-        if (!crossedObstacle && ballY - ballRadius < obstacleY + obstacleRadius
-                && ballY + ballRadius > obstacleY - obstacleRadius) {
-
-            // כאשר הכדור מגיע למרכז המכשול – שינוי צבע
-            if (ballY > obstacleY - 10 && ballY < obstacleY + 10) {
-                int newColor;
-                do {
-                    newColor = colors[(int) (Math.random() * colors.length)];
-                } while (newColor == ballColor); // לא לשים אותו צבע שוב
-                ballColor = newColor;
-
-                crossedObstacle = true; // מונע שינוי צבע שוב עד לעדכון הבא
+            for (int i = 0; i < obstacleCount; i++) {
+                obstaclesY[i] += move;
             }
         }
 
-        // איפוס הדגל אחרי שהכדור עבר את המכשול לחלוטין
-        if (ballY - ballRadius > obstacleY + obstacleRadius) {
-            crossedObstacle = false;
+        // ----- ציור מכשולים -----
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(strokeWidth);
+
+        for (int i = 0; i < obstacleCount; i++) {
+
+            int[] obsColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
+
+            for (int j = 0; j < 4; j++) {
+                paint.setColor(obsColors[j]);
+                canvas.drawArc(
+                        new RectF(
+                                obstacleX - obstacleRadius,
+                                obstaclesY[i] - obstacleRadius,
+                                obstacleX + obstacleRadius,
+                                obstaclesY[i] + obstacleRadius),
+                        angle + j * 90,
+                        90,
+                        false,
+                        paint
+                );
+            }
         }
 
-        invalidate(); // ציור מחדש
+        angle += 3;
+        if (angle >= 360) angle = 0;
+
+        // ----- ציור הכדור -----
+        if (!exploding) {
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(ballColor);
+            canvas.drawCircle(ballX, ballY, ballRadius, paint);
+        }
+
+        // ----- פיצוץ -----
+        if (exploding) {
+            paint.setColor(ballColor);
+            paint.setAlpha(explosionAlpha);
+            canvas.drawCircle(ballX, ballY, explosionRadius, paint);
+
+            explosionRadius += 8;
+            explosionAlpha -= 12;
+        }
+
+        // ----- בדיקת פגיעה -----
+        if (!gameOver && !exploding) {
+            for (int i = 0; i < obstacleCount; i++) {
+
+                float dx = ballX - obstacleX;
+                float dy = ballY - obstaclesY[i];
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > obstacleRadius - strokeWidth / 2 - ballRadius &&
+                        distance < obstacleRadius + strokeWidth / 2 + ballRadius) {
+
+                    double touchAngle = Math.toDegrees(Math.atan2(dy, dx));
+                    if (touchAngle < 0) touchAngle += 360;
+                    touchAngle = (touchAngle - angle + 360) % 360;
+
+                    int obstacleColor;
+                    if (touchAngle < 90) obstacleColor = Color.RED;
+                    else if (touchAngle < 180) obstacleColor = Color.BLUE;
+                    else if (touchAngle < 270) obstacleColor = Color.YELLOW;
+                    else obstacleColor = Color.GREEN;
+
+                    if (obstacleColor != ballColor) {
+                        gameOver = true;
+                        exploding = true;
+                        explosionRadius = ballRadius;
+                        explosionAlpha = 255;
+                    }
+                }
+
+                // ----- אם עברנו את המכשול – מוחקים ומוסיפים חדש -----
+                if (obstaclesY[i] - obstacleRadius > canvas.getHeight()) {
+
+                    // מוצאים את המכשול הכי גבוה
+                    float minY = obstaclesY[0];
+                    for (int k = 1; k < obstacleCount; k++) {
+                        if (obstaclesY[k] < minY) minY = obstaclesY[k];
+                    }
+
+                    obstaclesY[i] = minY - 800;
+
+                    // שינוי צבע אחרי מעבר
+                    int newColor;
+                    do {
+                        newColor = colors[(int) (Math.random() * 4)];
+                    } while (newColor == ballColor);
+                    ballColor = newColor;
+                }
+            }
+        }
+
+        invalidate();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            velocity = -20; // קפיצה
+        if (event.getAction() == MotionEvent.ACTION_DOWN && !gameOver) {
+            velocity = -20;
         }
         return true;
     }
