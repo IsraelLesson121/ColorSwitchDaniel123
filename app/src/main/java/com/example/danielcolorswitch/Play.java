@@ -22,18 +22,21 @@ public class Play extends View {
     int[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
 
     // ----- מכשולים -----
-    int obstacleCount = 3;              // כמה מכשולים במסך
+    int obstacleCount = 3;
     float[] obstaclesY = new float[obstacleCount];
     float obstacleX;
-    float obstacleRadius = 250;
-    float strokeWidth = 20;
+    float obstacleRadius = 320;
+    float strokeWidth = 16;
     float angle = 0;
 
     // ----- משחק -----
     boolean gameOver = false;
     boolean exploding = false;
 
-    // פיצוץ
+    // ----- ניקוד -----
+    int score = 0;
+
+    // ----- פיצוץ -----
     float explosionRadius = 0;
     int explosionAlpha = 255;
 
@@ -45,10 +48,12 @@ public class Play extends View {
 
         obstacleX = ballX;
 
-        // מיקום התחלתי של מכשולים
         for (int i = 0; i < obstacleCount; i++) {
-            obstaclesY[i] = ballY - 500 - i * 800;
+            obstaclesY[i] = ballY - 700 - i * 1000;
         }
+
+        paint.setTextSize(80);
+        paint.setAntiAlias(true);
     }
 
     @Override
@@ -62,7 +67,7 @@ public class Play extends View {
             ballY += velocity;
         }
 
-        // ----- המסך עולה -----
+        // ----- הזזת המסך -----
         float middle = canvas.getHeight() / 2f;
         if (ballY < middle) {
             float move = middle - ballY;
@@ -146,18 +151,19 @@ public class Play extends View {
                     }
                 }
 
-                // ----- אם עברנו את המכשול – מוחקים ומוסיפים חדש -----
+                // ----- עברנו מכשול -----
                 if (obstaclesY[i] - obstacleRadius > canvas.getHeight()) {
 
-                    // מוצאים את המכשול הכי גבוה
                     float minY = obstaclesY[0];
                     for (int k = 1; k < obstacleCount; k++) {
                         if (obstaclesY[k] < minY) minY = obstaclesY[k];
                     }
 
-                    obstaclesY[i] = minY - 800;
+                    obstaclesY[i] = minY - 1000;
 
-                    // שינוי צבע אחרי מעבר
+                    // ניקוד עולה
+                    score++;
+
                     int newColor;
                     do {
                         newColor = colors[(int) (Math.random() * 4)];
@@ -166,6 +172,12 @@ public class Play extends View {
                 }
             }
         }
+
+        // ----- ציור ניקוד -----
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(255);
+        canvas.drawText("Score: " + score, 50, 100, paint);
 
         invalidate();
     }
