@@ -12,22 +12,36 @@ public class Play extends View {
 
     Paint paint = new Paint();
 
+    // ----- צבעים מותאמים לעיוורון צבעים -----
+    int RED_COLOR = Color.RED;
+    int BLUE_COLOR = Color.BLUE;
+
+    // צהוב יותר כתום וברור
+    int YELLOW_COLOR = Color.rgb(255, 170, 0);
+
+    // ירוק כהה וחזק
+    int GREEN_COLOR = Color.rgb(0, 150, 0);
+
     // ----- כדור -----
     float ballX, ballY;
     float ballRadius = 30;
     float velocity = 0;
     float gravity = 1.2f;
-    int ballColor = Color.RED;
+    int ballColor = RED_COLOR;
 
-    int[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
+    int[] colors = {RED_COLOR, BLUE_COLOR, YELLOW_COLOR, GREEN_COLOR};
 
     // ----- מכשולים -----
     int obstacleCount = 3;
     float[] obstaclesY = new float[obstacleCount];
+    boolean[] passed = new boolean[obstacleCount];
+
     float obstacleX;
     float obstacleRadius = 320;
     float strokeWidth = 16;
     float angle = 0;
+
+    float obstacleSpacing = 1400;
 
     // ----- משחק -----
     boolean gameOver = false;
@@ -49,7 +63,8 @@ public class Play extends View {
         obstacleX = ballX;
 
         for (int i = 0; i < obstacleCount; i++) {
-            obstaclesY[i] = ballY - 700 - i * 1000;
+            obstaclesY[i] = ballY - 700 - i * obstacleSpacing;
+            passed[i] = false;
         }
 
         paint.setTextSize(80);
@@ -61,13 +76,20 @@ public class Play extends View {
         super.onDraw(canvas);
         canvas.drawColor(Color.BLACK);
 
-        // ----- פיזיקה -----
+        // פיזיקה
         if (!gameOver) {
             velocity += gravity;
             ballY += velocity;
         }
 
-        // ----- הזזת המסך -----
+        // פגיעה למטה בלבד
+        if (!gameOver && !exploding) {
+            if (ballY + ballRadius >= canvas.getHeight()) {
+                explode();
+            }
+        }
+
+        // הזזת מסך
         float middle = canvas.getHeight() / 2f;
         if (ballY < middle) {
             float move = middle - ballY;
@@ -78,16 +100,17 @@ public class Play extends View {
             }
         }
 
-        // ----- ציור מכשולים -----
+        // ציור מכשולים
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(strokeWidth);
 
         for (int i = 0; i < obstacleCount; i++) {
 
-            int[] obsColors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN};
+            int[] obsColors = {RED_COLOR, YELLOW_COLOR, BLUE_COLOR, GREEN_COLOR};
 
             for (int j = 0; j < 4; j++) {
                 paint.setColor(obsColors[j]);
+
                 canvas.drawArc(
                         new RectF(
                                 obstacleX - obstacleRadius,
@@ -105,14 +128,14 @@ public class Play extends View {
         angle += 3;
         if (angle >= 360) angle = 0;
 
-        // ----- ציור הכדור -----
+        // ציור הכדור
         if (!exploding) {
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(ballColor);
             canvas.drawCircle(ballX, ballY, ballRadius, paint);
         }
 
-        // ----- פיצוץ -----
+        // פיצוץ
         if (exploding) {
             paint.setColor(ballColor);
             paint.setAlpha(explosionAlpha);
@@ -122,7 +145,7 @@ public class Play extends View {
             explosionAlpha -= 12;
         }
 
-        // ----- בדיקת פגיעה -----
+        // בדיקת פגיעה במכשולים
         if (!gameOver && !exploding) {
             for (int i = 0; i < obstacleCount; i++) {
 
@@ -138,20 +161,32 @@ public class Play extends View {
                     touchAngle = (touchAngle - angle + 360) % 360;
 
                     int obstacleColor;
-                    if (touchAngle < 90) obstacleColor = Color.RED;
-                    else if (touchAngle < 180) obstacleColor = Color.BLUE;
-                    else if (touchAngle < 270) obstacleColor = Color.YELLOW;
-                    else obstacleColor = Color.GREEN;
+                    if (touchAngle < 90) obstacleColor = RED_COLOR;
+                    else if (touchAngle < 180) obstacleColor = YELLOW_COLOR;
+                    else if (touchAngle < 270) obstacleColor = BLUE_COLOR;
+                    else obstacleColor = GREEN_COLOR;
 
                     if (obstacleColor != ballColor) {
-                        gameOver = true;
-                        exploding = true;
-                        explosionRadius = ballRadius;
-                        explosionAlpha = 255;
+                        explode();
                     }
                 }
 
-                // ----- עברנו מכשול -----
+                // ניקוד אחרי מעבר מלא
+                if (!passed[i] &&
+                        ballY + ballRadius < obstaclesY[i] - obstacleRadius) {
+
+                    score++;
+                    passed[i] = true;
+
+                    int newColor;
+                    do {
+                        newColor = colors[(int) (Math.random() * 4)];
+                    } while (newColor == ballColor);
+
+                    ballColor = newColor;
+                }
+
+                // מחזור מכשול
                 if (obstaclesY[i] - obstacleRadius > canvas.getHeight()) {
 
                     float minY = obstaclesY[0];
@@ -159,27 +194,26 @@ public class Play extends View {
                         if (obstaclesY[k] < minY) minY = obstaclesY[k];
                     }
 
-                    obstaclesY[i] = minY - 1000;
-
-                    // ניקוד עולה
-                    score++;
-
-                    int newColor;
-                    do {
-                        newColor = colors[(int) (Math.random() * 4)];
-                    } while (newColor == ballColor);
-                    ballColor = newColor;
+                    obstaclesY[i] = minY - obstacleSpacing;
+                    passed[i] = false;
                 }
             }
         }
 
-        // ----- ציור ניקוד -----
+        // ציור ניקוד
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.WHITE);
         paint.setAlpha(255);
         canvas.drawText("Score: " + score, 50, 100, paint);
 
         invalidate();
+    }
+
+    private void explode() {
+        gameOver = true;
+        exploding = true;
+        explosionRadius = ballRadius;
+        explosionAlpha = 255;
     }
 
     @Override
