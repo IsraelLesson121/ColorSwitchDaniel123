@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#1E1E2F"
+    tools:context=".InstructionActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎮 COLOR SWITCH"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center"
+        android:paddingBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="מטרת המשחק:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFD54F"
+        android:paddingTop="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="להעביר את הכדור דרך המכשולים מבלי להיפסל. הכדור יכול לעבור רק דרך צבע זהה לצבע שלו."
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:paddingTop="4dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="איך משחקים?"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFD54F"
+        android:paddingTop="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• לחיצה על המסך תקפיץ את הכדור.\n• יש לעבור רק דרך החלק בצבע המתאים.\n• אם נוגעים בצבע שונה – נפסלים.\n• איסוף כוכבים מעלה את הניקוד."
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:paddingTop="4dp"/>
+
+    <!-- שאלות נפוצות -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="שאלות נפוצות:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFD54F"
+        android:paddingTop="24dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="❓ איך משנים את צבע הכדור?\n✔️ צבע הכדור משתנה אוטומטית כאשר עוברים דרך מחליף צבע."
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:paddingTop="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="❓ מה קורה אם נפסלים?\n✔️ המשחק מסתיים וניתן להתחיל מחדש מההתחלה."
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:paddingTop="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="❓ איך משיגים ניקוד גבוה?\n✔️ עוברים יותר מכשולים ואוספים כמה שיותר כוכבים בלי להיפסל."
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:paddingTop="8dp"/>
+
+    <!-- משחק מהנה מעוצב -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🎉 משחק מהנה! 🎉"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:textColor="#FF2D95"
+        android:gravity="center"
+        android:letterSpacing="0.08"
+        android:paddingTop="40dp"
+        android:paddingBottom="24dp"/>
+</LinearLayout>

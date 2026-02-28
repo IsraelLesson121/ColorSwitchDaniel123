@@ -23,14 +23,7 @@ public class StarStore extends AppCompatActivity {
         Button btn4 = findViewById(R.id.btn4);
         Button btn5 = findViewById(R.id.btn5);
         Button btn6 = findViewById(R.id.btn6);
-        Button btn7 = findViewById(R.id.btn7);
-        Button btn8 = findViewById(R.id.btn8);
-        Button btn9 = findViewById(R.id.btn9);
-        Button btn10 = findViewById(R.id.btn10);
 
 
-        btn1.setOnClickListener(v -> {
-            Toast.makeText(this, "לחצת על כפתור 1", Toast.LENGTH_SHORT).show();
-        });
     }
     }
