@@ -11,19 +11,19 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- כותרת גדולה ומרשימה -->
+        <!-- כותרת -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Stars Store"
             android:textColor="#FFD700"
-            android:textSize="36sp"
+            android:textSize="34sp"
             android:textStyle="bold"
             android:gravity="center"
             android:layout_marginTop="24dp"
-            android:layout_marginBottom="32dp"/>
+            android:layout_marginBottom="24dp"/>
 
-        <!-- גריד עם 6 כפתורים צבעוניים -->
+        <!-- גריד של 6 סקינים -->
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -33,7 +33,7 @@
             android:alignmentMode="alignMargins"
             android:columnOrderPreserved="false">
 
-            <!-- כפתור 1 -->
+            <!-- סקין 1 - עיגול -->
             <Button
                 android:id="@+id/btn1"
                 android:layout_width="0dp"
@@ -42,12 +42,12 @@
                 android:layout_rowWeight="1"
                 android:layout_margin="8dp"
                 android:background="#FF6F61"
-                android:text="◆\n⭐ 10"
+                android:text="●"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="50sp"
                 android:gravity="center"/>
 
-            <!-- כפתור 2 -->
+            <!-- סקין 2 - ריבוע -->
             <Button
                 android:id="@+id/btn2"
                 android:layout_width="0dp"
@@ -56,12 +56,12 @@
                 android:layout_rowWeight="1"
                 android:layout_margin="8dp"
                 android:background="#6B5B95"
-                android:text="■\n⭐ 20"
+                android:text="■"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="50sp"
                 android:gravity="center"/>
 
-            <!-- כפתור 3 -->
+            <!-- סקין 3 - משולש -->
             <Button
                 android:id="@+id/btn3"
                 android:layout_width="0dp"
@@ -70,12 +70,12 @@
                 android:layout_rowWeight="1"
                 android:layout_margin="8dp"
                 android:background="#88B04B"
-                android:text="▲\n⭐ 30"
+                android:text="▲"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="50sp"
                 android:gravity="center"/>
 
-            <!-- כפתור 4 -->
+            <!-- סקין 4 - יהלום -->
             <Button
                 android:id="@+id/btn4"
                 android:layout_width="0dp"
@@ -84,12 +84,12 @@
                 android:layout_rowWeight="1"
                 android:layout_margin="8dp"
                 android:background="#FFA500"
-                android:text="💎\n⭐ 40"
+                android:text="◆"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="50sp"
                 android:gravity="center"/>
 
-            <!-- כפתור 5 -->
+            <!-- סקין 5 - X -->
             <Button
                 android:id="@+id/btn5"
                 android:layout_width="0dp"
@@ -98,12 +98,12 @@
                 android:layout_rowWeight="1"
                 android:layout_margin="8dp"
                 android:background="#00BFFF"
-                android:text="★\n⭐ 50"
+                android:text="✖"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="50sp"
                 android:gravity="center"/>
 
-            <!-- כפתור 6 -->
+            <!-- סקין 6 - פלוס -->
             <Button
                 android:id="@+id/btn6"
                 android:layout_width="0dp"
@@ -112,9 +112,9 @@
                 android:layout_rowWeight="1"
                 android:layout_margin="8dp"
                 android:background="#FF69B4"
-                android:text="💎\n⭐ 60"
+                android:text="＋"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="50sp"
                 android:gravity="center"/>
 
         </GridLayout>
