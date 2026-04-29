@@ -12,9 +12,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static ArrayList<Record> records;
+    FB fb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,18 @@ public class MainActivity extends AppCompatActivity {
         Button btnInstruction = findViewById(R.id.btnInstruction);
         Button btnStore = findViewById(R.id.btnStore);
         Button btnPlay = findViewById(R.id.btnPlay);
+        Button btnBestScore = findViewById(R.id.btnBestScore);
+
+        records = new ArrayList<>();
+        fb = FB.getInstance();
+
+        btnBestScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, RecordsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
         btnInstruction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, StarStore.class);
                 startActivity(intent);
             }
+
 
         });
         String text = "COLOR SWITCH";

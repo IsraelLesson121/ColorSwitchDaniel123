@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="100dp"
         android:text="COLOR SWITCH"
         android:textColor="#FF00FF"
         android:textSize="54dp"
@@ -60,7 +60,17 @@
             android:text="⭐Stars Store⭐"
             android:textColor="@android:color/white"
             android:textSize="40sp" />
-
-
+    <Button
+        android:id="@+id/btnBestScore"
+        android:layout_width="300dp"
+        android:layout_height="120dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="50dp"
+        android:backgroundTint="@android:color/holo_green_light"
+        android:text="Best Score"
+        android:textColor="@android:color/white"
+        android:textSize="40sp" />
 
 </LinearLayout>

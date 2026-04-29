@@ -43,10 +43,12 @@ public class GameOverDialog {
         builder.setMessage("Your Score: " + score + "\n\nמה תרצה לעשות?");
 
         builder.setPositiveButton("PLAY AGAIN", (d, w) -> {
+            FB.getInstance().setRecord("daniel", score);
             if (onRestart != null) onRestart.run();
         });
 
         builder.setNegativeButton("EXIT", (d, w) -> {
+            FB.getInstance().setRecord("daniel", score);
             if (onExit != null) onExit.run();
         });
 

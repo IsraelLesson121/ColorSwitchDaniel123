@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DanielColorSwitch">
         <activity
+            android:name=".RecordsActivity"
+            android:exported="false" />
+        <activity
             android:name=".InstructionActivity"
             android:exported="false" />
         <activity
