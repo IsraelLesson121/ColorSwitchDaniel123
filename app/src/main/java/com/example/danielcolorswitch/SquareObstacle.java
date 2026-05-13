@@ -3,28 +3,13 @@ package com.example.danielcolorswitch;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-public class SquareObstacle implements Obstacle {
+public class SquareObstacle extends Obstacle {
 
-    float x, y;
     float size = 300; // חצי הצלע
-    float angle = 0;
-
-    int RED_COLOR, BLUE_COLOR, YELLOW_COLOR, GREEN_COLOR;
 
     public SquareObstacle(float x, float y,
                           int red, int yellow, int blue, int green) {
-        this.x = x;
-        this.y = y;
-        RED_COLOR = red;
-        YELLOW_COLOR = yellow;
-        BLUE_COLOR = blue;
-        GREEN_COLOR = green;
-    }
-
-    @Override
-    public void update() {
-        angle += 3;
-        if (angle >= 360) angle = 0;
+        super(x, y, red, yellow, blue, green);
     }
 
     @Override
@@ -51,7 +36,6 @@ public class SquareObstacle implements Obstacle {
         float dy = ballY - y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-        // בדיקה לפי צבע, מחולק ל-4 רבעים כמו העיגול
         if (distance > size - ballRadius && distance < size + ballRadius) {
             double touchAngle = Math.toDegrees(Math.atan2(dy, dx));
             if (touchAngle < 0) touchAngle += 360;
@@ -66,21 +50,6 @@ public class SquareObstacle implements Obstacle {
             return obstacleColor != ballColor;
         }
         return false;
-    }
-
-    @Override
-    public void move(float dy) {
-        y += dy;
-    }
-
-    @Override
-    public float getY() {
-        return y;
-    }
-
-    @Override
-    public void setY(float newY) {
-        y = newY;
     }
 
     @Override
