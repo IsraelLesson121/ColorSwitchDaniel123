@@ -4,314 +4,200 @@ import android.content.Context;
 import android.graphics.*;
 import android.view.MotionEvent;
 import android.view.View;
-
 import java.util.Random;
 
-/*
- מחלקת המשחק הראשית
- אחראית על:
- - תנועת הכדור
- - מכשולים
- - ניקוד
- - סקינים
- - פיצוץ
- */
+public class Play extends View { // הגדרת המחלקה כיורשת מ-View כדי לצייר גרפיקה אישית
 
-public class Play extends View {
+    // --- אתחול משתנים וכלי ציור ---
+    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG); // יצירת "מכחול" עם דגל שמחליק קצוות (אנטי-אליאסינג)
+    Random random = new Random(); // אובייקט ליצירת מספרים אקראיים (למכשולים וצבעים)
 
-    Paint paint = new Paint();
-    Paint textPaint = new Paint();
+    // מערך צבעים קבוע למשחק
+    int[] colors = {Color.RED, Color.BLUE, Color.rgb(255,170,0), Color.rgb(0,150,0)};
 
-    Random random = new Random();
+    // משתני הכדור (השחקן)
+    float ballX, ballY, ballRadius = 30; // מיקום X,Y ורדיוס הכדור
+    float velocity = 0, gravity = 1.2f; // מהירות נוכחית וכוח משיכה קבוע (פיזיקה)
+    int ballColor = colors[0]; // צבע הכדור ההתחלתי
+    int selectedSkin; // משתנה שיכיל את מספר הסקין שנבחר בחנות
 
-    // צבעים
-    int RED = Color.RED;
-    int BLUE = Color.BLUE;
-    int YELLOW = Color.rgb(255,170,0);
-    int GREEN = Color.rgb(0,150,0);
+    // ניהול המכשולים
+    Obstacle[] obstacles = new Obstacle[4]; // מערך שמכיל 4 אובייקטים של מכשולים (פולימורפיזם)
+    float obstacleSpacing = 900; // המרחק האנכי בין מכשול למכשול
+    int score = 0; // מונה נקודות
+    boolean gameOver = false, startPaused = true; // דגלים למצב המשחק (עצור/נגמר)
 
-    int[] colors = {RED, BLUE, YELLOW, GREEN};
-
-    // כדור
-    float ballX, ballY;
-    float ballRadius = 30;
-
-    float velocity = 0;
-    float gravity = 1.2f;
-
-    int ballColor = RED;
-
-    // סקין
-    int selectedSkin;
-
-    // מכשולים
-    Obstacle[] obstacles;
-    int obstacleCount = 4;
-    float obstacleSpacing = 900;
-
-    boolean gameOver = false;
-    boolean startPaused = true;
-
-    int score = 0;
-
-    // פיצוץ
-    boolean exploding = false;
-    float explosionRadius = 0;
-    int explosionAlpha = 255;
+    // משתני אנימציית הפיצוץ
+    boolean exploding = false; // דגל האם יש פיצוץ כרגע
+    float explosionRadius = 0; // רדיוס העיגול של הפיצוץ שגדל
+    int explosionAlpha = 255; // רמת השקיפות של הפיצוץ (הולכת ונעלמת)
 
     public Play(Context context) {
+        super(context); // קריאה לבנאי של View
+        selectedSkin = SkinManager.getSelectedSkin(context); // שליפת הסקין השמור מהזיכרון (SharedPreferences)
 
-        super(context);
-
-        selectedSkin = SkinManager.getSelectedSkin(context);
-
+        // חישוב מרכז המסך לפי מימדי המכשיר
         ballX = getResources().getDisplayMetrics().widthPixels / 2f;
         ballY = getResources().getDisplayMetrics().heightPixels / 2f;
 
-        obstacles = new Obstacle[obstacleCount];
+        initObstacles(); // קריאה לפעולת יצירת המכשולים הראשונית
+    }
 
-        float currentY = ballY - 700;
-
-        for(int i=0;i<obstacleCount;i++){
-            obstacles[i] = createRandomObstacle(currentY);
-            currentY -= obstacleSpacing;
+    private void initObstacles() {
+        float currentY = ballY - 700; // התחלת הצבת המכשולים מעל הכדור
+        for(int i = 0; i < obstacles.length; i++){
+            obstacles[i] = createRandomObstacle(currentY); // יצירת מכשול אקראי במיקום Y
+            currentY -= obstacleSpacing; // קידום המיקום למעלה עבור המכשול הבא
         }
-
-        textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(70);
-        textPaint.setAntiAlias(true);
     }
 
     private Obstacle createRandomObstacle(float y){
-
-        int type = random.nextInt(3);
-
-        if(type == 0)
-            return new CircleObstacle(ballX,y,RED,YELLOW,BLUE,GREEN);
-
-        else if(type == 1)
-            return new SquareObstacle(ballX,y,RED,YELLOW,BLUE,GREEN);
-
-        else
-            return new PlusObstacle(ballX+180,y,RED,YELLOW,BLUE,GREEN);
+        int type = random.nextInt(3); // הגרלת מספר בין 0 ל-2 לקביעת סוג המכשול
+        if(type == 0) return new CircleObstacle(ballX, y, colors[0], colors[2], colors[1], colors[3]); // יצירת עיגול
+        if(type == 1) return new SquareObstacle(ballX, y, colors[0], colors[2], colors[1], colors[3]); // יצירת ריבוע
+        return new PlusObstacle(ballX + 180, y, colors[0], colors[2], colors[1], colors[3]); // יצירת פלוס
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-
+    protected void onDraw(Canvas canvas) { // הפעולה המרכזית שמציירת כל פריים (Frame)
         super.onDraw(canvas);
+        canvas.drawColor(Color.BLACK); // צביעת כל הרקע בשחור
 
-        canvas.drawColor(Color.BLACK);
-
-        // תנועה
+        // עדכון פיזיקה - נפילת הכדור
         if(!gameOver && !startPaused){
-            velocity += gravity;
-            ballY += velocity;
+            velocity += gravity; // המהירות גדלה בגלל כוח המשיכה
+            ballY += velocity;   // המיקום משתנה לפי המהירות
         }
 
-        // נפילה
-        if(!gameOver && ballY + ballRadius >= canvas.getHeight()){
-            explode();
-        }
-
-        float middle = canvas.getHeight()/2f;
-        float move = 0;
-
+        // מנגנון גלילה (Scrolling) - הכדור נשאר במרכז והעולם זז למטה
+        float middle = canvas.getHeight() / 2f;
         if(ballY < middle){
-            move = middle - ballY;
-            ballY = middle;
+            float offset = middle - ballY; // חישוב ההפרש בין הכדור למרכז
+            ballY = middle; // קיבוע הכדור למרכז המסך
+            for(Obstacle obs : obstacles) obs.move(offset); // הזזת כל המכשולים למטה באותו הפרש
         }
 
-        for(int i=0;i<obstacleCount;i++){
+        // לולאה לניהול המכשולים
+        for(int i = 0; i < obstacles.length; i++){
+            obstacles[i].update(); // עדכון זווית הסיבוב של המכשול
+            obstacles[i].draw(canvas, paint); // ציור המכשול על הקנבס
 
-            obstacles[i].update();
-            obstacles[i].draw(canvas,paint);
+            // בדיקת התנגשות (Collision)
+            if(!gameOver && obstacles[i].checkCollision(ballX, ballY, ballRadius, ballColor)) triggerGameOver();
 
-            if(!gameOver &&
-                    obstacles[i].checkCollision(ballX,ballY,ballRadius,ballColor)){
-                explode();
-            }
+            // בדיקת מעבר מכשול - ניקוד ומיחזור
+            if (!gameOver && ballY < obstacles[i].getTopY()) {
+                score++; // העלאת הניקוד
+                changeBallColor(); // החלפת צבע הכדור
 
-            if(move>0)
-                obstacles[i].move(move);
+                // מציאת המכשול הגבוה ביותר כדי למקם את החדש מעליו
+                float minY = ballY;
+                for (int j = 0; j < obstacles.length; j++) {
+                    if (obstacles[j].getY() < minY) {
+                        minY = obstacles[j].getY();
+                    }
+                }
 
-            if(!gameOver && ballY + ballRadius < obstacles[i].getTopY()){
-
-                score++;
-                changeBallColor();
-
-                float minY = getMinY();
+                // מיחזור: המכשול שעברנו (i) עובר למיקום חדש מעל כולם
                 obstacles[i] = createRandomObstacle(minY - obstacleSpacing);
             }
         }
 
-        // ציור סקין
-        paint.setColor(ballColor);
-        paint.setStyle(Paint.Style.FILL);
+        // ציור הכדור
+        paint.setColor(ballColor); // הגדרת צבע המכחול לצבע הכדור
+        paint.setStyle(Paint.Style.FILL); // הגדרת ציור מלא (לא רק קווי מתאר)
+        drawActiveSkin(canvas); // קריאה לפונקציה שמציירת את הצורה שנבחרה (סקין)
 
-        drawSkin(canvas);
+        // ציור אנימציית הפיצוץ
+        if(exploding) renderExplosion(canvas);
 
-        // פיצוץ
-        if(exploding){
+        // ציור הניקוד על המסך
+        paint.setColor(Color.WHITE); // צבע לבן לטקסט
+        paint.setTextSize(70); // גודל הטקסט
+        canvas.drawText("Score: " + score, 50, 100, paint); // כתיבת הניקוד במיקום קבוע
 
-            Paint p = new Paint();
-            p.setColor(ballColor);
-            p.setStyle(Paint.Style.FILL);
-            p.setAlpha(explosionAlpha);
+        // בדיקה אם השחקן נפל מחוץ למסך למטה
+        if(!gameOver && ballY > canvas.getHeight()) triggerGameOver();
 
-            canvas.drawCircle(ballX,ballY,explosionRadius,p);
-
-            explosionRadius += 15;
-            explosionAlpha -= 25;
-
-            if(explosionAlpha <= 0)
-                exploding = false;
-        }
-
-        canvas.drawText("Score: "+score,50,100,textPaint);
-
-        invalidate();
+        invalidate(); // פקודה קריטית: אומרת למערכת לצייר מחדש מיד (יוצרת לולאה)
     }
 
-    // 6 סקינים שונים
-    private void drawSkin(Canvas canvas){
-
-        if(selectedSkin == 1){
-            canvas.drawCircle(ballX,ballY,ballRadius,paint);
+    private void drawActiveSkin(Canvas canvas){
+        switch(selectedSkin){ // בדיקה איזה מספר סקין נבחר
+            case 1: canvas.drawCircle(ballX, ballY, ballRadius, paint); break; // ציור עיגול
+            case 2: canvas.drawRect(ballX-ballRadius, ballY-ballRadius, ballX+ballRadius, ballY+ballRadius, paint); break; // ציור ריבוע
+            case 3: // ציור משולש בעזרת נתיב (Path)
+                Path p = new Path();
+                p.moveTo(ballX, ballY-ballRadius);
+                p.lineTo(ballX-ballRadius, ballY+ballRadius);
+                p.lineTo(ballX+ballRadius, ballY+ballRadius);
+                p.close();
+                canvas.drawPath(p, paint);
+                break;
+            case 4: // ציור יהלום
+                Path d = new Path();
+                d.moveTo(ballX, ballY-ballRadius);
+                d.lineTo(ballX+ballRadius, ballY);
+                d.lineTo(ballX, ballY+ballRadius);
+                d.lineTo(ballX-ballRadius, ballY);
+                d.close();
+                canvas.drawPath(d, paint);
+                break;
+            case 5: // ציור איקס (X) בעזרת שני קווים
+                paint.setStrokeWidth(10);
+                canvas.drawLine(ballX-ballRadius, ballY-ballRadius, ballX+ballRadius, ballY+ballRadius, paint);
+                canvas.drawLine(ballX+ballRadius, ballY-ballRadius, ballX-ballRadius, ballY+ballRadius, paint);
+                break;
+            case 6: // ציור פלוס (+) בעזרת שני מלבנים צרים
+                canvas.drawRect(ballX-5, ballY-ballRadius, ballX+5, ballY+ballRadius, paint);
+                canvas.drawRect(ballX-ballRadius, ballY-5, ballX+ballRadius, ballY+5, paint);
+                break;
         }
+    }
 
-        else if(selectedSkin == 2){
-            canvas.drawRect(ballX-ballRadius,ballY-ballRadius,
-                    ballX+ballRadius,ballY+ballRadius,paint);
-        }
-
-        else if(selectedSkin == 3){ // משולש
-
-            Path path = new Path();
-            path.moveTo(ballX,ballY-ballRadius);
-            path.lineTo(ballX-ballRadius,ballY+ballRadius);
-            path.lineTo(ballX+ballRadius,ballY+ballRadius);
-            path.close();
-
-            canvas.drawPath(path,paint);
-        }
-
-        else if(selectedSkin == 4){ // יהלום
-
-            Path path = new Path();
-            path.moveTo(ballX,ballY-ballRadius);
-            path.lineTo(ballX+ballRadius,ballY);
-            path.lineTo(ballX,ballY+ballRadius);
-            path.lineTo(ballX-ballRadius,ballY);
-            path.close();
-
-            canvas.drawPath(path,paint);
-        }
-
-        else if(selectedSkin == 5){ // X
-
-            canvas.drawLine(ballX-ballRadius,ballY-ballRadius,
-                    ballX+ballRadius,ballY+ballRadius,paint);
-
-            canvas.drawLine(ballX+ballRadius,ballY-ballRadius,
-                    ballX-ballRadius,ballY+ballRadius,paint);
-        }
-
-        else if(selectedSkin == 6){ // פלוס
-
-            canvas.drawRect(ballX-10,ballY-ballRadius,
-                    ballX+10,ballY+ballRadius,paint);
-
-            canvas.drawRect(ballX-ballRadius,ballY-10,
-                    ballX+ballRadius,ballY+10,paint);
-        }
+    private void renderExplosion(Canvas canvas) {
+        paint.setAlpha(explosionAlpha); // הגדרת שקיפות המכחול
+        canvas.drawCircle(ballX, ballY, explosionRadius, paint); // ציור עיגול הפיצוץ
+        explosionRadius += 15; // הגדלת הרדיוס בכל פריים
+        explosionAlpha -= 25; // הפחתת השקיפות בכל פריים (נעלם)
+        if(explosionAlpha <= 0) { exploding = false; paint.setAlpha(255); } // סיום האנימציה
     }
 
     private void changeBallColor(){
-
-        int newColor;
-
-        do{
-            newColor = colors[random.nextInt(colors.length)];
-        }while(newColor == ballColor);
-
-        ballColor = newColor;
+        int next;
+        do { next = colors[random.nextInt(colors.length)]; }
+        while(next == ballColor); // הגרלת צבע חדש עד שהוא יהיה שונה מהצבע הנוכחי
+        ballColor = next;
     }
 
-    private float getMinY(){
-
-        float minY = Float.MAX_VALUE;
-
-        for(int i=0;i<obstacleCount;i++){
-            if(obstacles[i].getY() < minY)
-                minY = obstacles[i].getY();
-        }
-
-        return minY;
-    }
-
-    private void explode(){
-
-        if(gameOver) return;
-
-        gameOver = true;
-        exploding = true;
-
+    private void triggerGameOver(){
+        if(gameOver) return; // מניעת הרצה כפולה של סיום המשחק
+        gameOver = true; // עדכון דגל סיום משחק
+        exploding = true; // הפעלת אנימציית הפיצוץ
         explosionRadius = ballRadius;
-        explosionAlpha = 255;
 
-        postDelayed(() -> {
-
-            GameOverDialog dialog =
-                    new GameOverDialog(getContext());
-
-            dialog.showGameOver(
-                    score,
-                    this::restartGame,
-                    this::exitToHome
-            );
-
-        },500);
+        postDelayed(() -> { // השהיית הצגת הדיאלוג בחצי שנייה (UX)
+            new GameOverDialog(getContext()).showGameOver(score, this::restartGame, this::exitToHome);
+        }, 500);
     }
 
-    private void restartGame(){
-
+    public void restartGame(){ // איפוס כל המשתנים למצב התחלתי
         ballY = getResources().getDisplayMetrics().heightPixels/2f;
-        velocity = 0;
-        ballColor = RED;
-        score = 0;
-
-        gameOver = false;
-        startPaused = true;
-        exploding = false;
-
-        float currentY = ballY - 700;
-
-        for(int i=0;i<obstacleCount;i++){
-            obstacles[i] = createRandomObstacle(currentY);
-            currentY -= obstacleSpacing;
-        }
+        velocity = 0; ballColor = colors[0]; score = 0;
+        gameOver = false; startPaused = true; exploding = false;
+        initObstacles(); // יצירת מכשולים חדשים
     }
 
-    private void exitToHome(){
-
-        if(getContext() instanceof android.app.Activity){
-            ((android.app.Activity)getContext()).finish();
-        }
+    private void exitToHome(){ // סגירת ה-Activity וחזרה למסך הראשי
+        if(getContext() instanceof android.app.Activity) ((android.app.Activity)getContext()).finish();
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event){
-
-        if(event.getAction() == MotionEvent.ACTION_DOWN){
-
-            if(startPaused)
-                startPaused = false;
-
-            if(!gameOver)
-                velocity = -20;
+    public boolean onTouchEvent(MotionEvent event){ // זיהוי נגיעות במסך
+        if(event.getAction() == MotionEvent.ACTION_DOWN){ // ברגע הלחיצה
+            if(startPaused) startPaused = false; // אם המשחק היה בהמתנה - להתחיל
+            if(!gameOver) velocity = -20; // מתן מהירות שלילית (כלפי מעלה) ליצירת קפיצה
         }
-
         return true;
     }
 }
