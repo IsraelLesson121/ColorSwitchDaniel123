@@ -43,7 +43,7 @@ public class GameOverDialog {
         }
 
         // יצירת רכיב טקסט עבור הכותרת והגדרת עיצוב (גודל ומרכוז)
-        TextView title = new TextView(context);
+        TextView title = new TextView(context);  
         title.setText(span);
         title.setTextSize(26);
         title.setGravity(Gravity.CENTER);
@@ -91,9 +91,6 @@ public class GameOverDialog {
         Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
         Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
 
-        // משיכת ה-Layout של הכפתורים כדי למרכז אותם
-        LinearLayout parent = (LinearLayout) positive.getParent();
-        parent.setGravity(Gravity.CENTER);
 
         // צביעת הכפתורים למראה ברור (ירוק לניצחון/המשך, אדום לעצירה)
         positive.setTextColor(Color.GREEN);
